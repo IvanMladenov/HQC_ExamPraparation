@@ -25,6 +25,80 @@
 
         private int trainTicketsCount;
 
+        public string CommandParser(string commandLine)
+        {
+            if (commandLine == string.Empty)
+            {
+                return null;
+            }
+
+            int firstSpaceIndex = commandLine.IndexOf(' ');
+
+            if (firstSpaceIndex == -1)
+            {
+                throw new InvalidOperationException("Invalid command!");
+            }
+
+            var parameters = GetParametersFromCommandLine(commandLine, firstSpaceIndex);
+
+            string command = commandLine.Substring(0, firstSpaceIndex);
+            string commandResult = "Invalid command!";
+            switch (command)
+            {
+                case "CreateFlight":
+                    commandResult = this.AddAirTicket(
+                        parameters[0],
+                        parameters[1],
+                        parameters[2],
+                        parameters[3],
+                        Ticket.ParseDateTime(parameters[4]),
+                        decimal.Parse(parameters[5]));
+                    break;
+                case "DeleteFlight":
+                    commandResult = this.DeleteAirTicket(parameters[0]);
+                    break;
+                case "CreateTrain":
+                    commandResult = this.AddTrainTicket(
+                        parameters[0],
+                        parameters[1],
+                        Ticket.ParseDateTime(parameters[2]),
+                        decimal.Parse(parameters[3]),
+                        decimal.Parse(parameters[4]));
+                    break;
+                case "DeleteTrain":
+                    commandResult = this.DeleteTrainTicket(
+                        parameters[0],
+                        parameters[1],
+                        Ticket.ParseDateTime(parameters[2]));
+                    break;
+                case "CreateBus":
+                    commandResult = this.AddBusTicket(
+                        parameters[0],
+                        parameters[1],
+                        parameters[2],
+                        Ticket.ParseDateTime(parameters[3]),
+                        decimal.Parse(parameters[4]));
+                    break;
+                case "DeleteBus":
+                    commandResult = this.DeleteBusTicket(
+                        parameters[0],
+                        parameters[1],
+                        parameters[2],
+                        Ticket.ParseDateTime(parameters[3]));
+                    break;
+                case "FindTickets":
+                    commandResult = this.FindTicketsByDepartureAndArrival(parameters[0], parameters[1]);
+                    break;
+                case "FindByDates":
+                    commandResult = this.FindTicketsInInterval(
+                        Ticket.ParseDateTime(parameters[0]),
+                        Ticket.ParseDateTime(parameters[1]));
+                    break;
+            }
+
+            return commandResult;
+        }
+
         public string FindTicketsByDepartureAndArrival(string from, string to)
         {
             string fromToKey = Ticket.CreateFromToKey(from, to);
@@ -70,11 +144,11 @@
         }
 
         public string AddAirTicket(
-            string flightNumber, 
-            string from, 
-            string to, 
-            string airline, 
-            DateTime dateAndTime, 
+            string flightNumber,
+            string from,
+            string to,
+            string airline,
+            DateTime dateAndTime,
             decimal price)
         {
             AirTicket ticket = new AirTicket(flightNumber, from, to, airline, dateAndTime, price);
@@ -163,136 +237,6 @@
             string result = string.Join(" ", sortedTickets.Select(t => t.ToString()));
 
             return result;
-        }
-
-        public string CommandParser(string commandLine)
-        {
-            if (commandLine == string.Empty)
-            {
-                return null;
-            }
-
-            int firstSpaceIndex = commandLine.IndexOf(' ');
-
-            if (firstSpaceIndex == -1)
-            {
-                throw new InvalidOperationException("Invalid command!");
-            }
-
-            var parameters = GetParametersFromCommandLine(commandLine, firstSpaceIndex);
-
-            string command = commandLine.Substring(0, firstSpaceIndex);
-            string commandResult = "Invalid command!";
-            switch (command)
-            {
-                case "CreateFlight":
-
-                    // string allParameters = commandLine.Substring(firstSpaceIndex + 1);
-                    // string[] parameters = allParameters.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                    // for (int i = 0; i < parameters.Length; i++)
-                    // {
-                    // parameters[i] = parameters[i].Trim();
-                    // }
-                    commandResult = this.AddAirTicket(
-                        parameters[0], 
-                        parameters[1], 
-                        parameters[2], 
-                        parameters[3], 
-                        Ticket.ParseDateTime(parameters[4]), 
-                        decimal.Parse(parameters[5]));
-                    break;
-                case "DeleteFlight":
-
-                    // allParameters = commandLine.Substring(firstSpaceIndex + 1);
-                    // parameters = allParameters.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                    // for (int i = 0; i < parameters.Length; i++)
-                    // {
-                    // parameters[i] = parameters[i].Trim();
-                    // }
-                    commandResult = this.DeleteAirTicket(parameters[0]);
-                    break;
-                case "CreateTrain":
-
-                    // allParameters = commandLine.Substring(firstSpaceIndex + 1);
-                    // parameters = allParameters.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                    // for (int i = 0; i < parameters.Length; i++)
-                    // {
-                    // parameters[i] = parameters[i].Trim();
-                    // }
-                    commandResult = this.AddTrainTicket(
-                        parameters[0], 
-                        parameters[1], 
-                        Ticket.ParseDateTime(parameters[2]), 
-                        decimal.Parse(parameters[3]), 
-                        decimal.Parse(parameters[4]));
-                    break;
-                case "DeleteTrain":
-
-                    // allParameters = commandLine.Substring(firstSpaceIndex + 1);
-                    // parameters = allParameters.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                    // for (int i = 0; i < parameters.Length; i++)
-                    // {
-                    // parameters[i] = parameters[i].Trim();
-                    // }
-                    commandResult = this.DeleteTrainTicket(
-                        parameters[0], 
-                        parameters[1], 
-                        Ticket.ParseDateTime(parameters[2]));
-                    break;
-                case "CreateBus":
-
-                    // allParameters = commandLine.Substring(firstSpaceIndex + 1);
-                    // parameters = allParameters.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                    // for (int i = 0; i < parameters.Length; i++)
-                    // {
-                    // parameters[i] = parameters[i].Trim();
-                    // }
-                    commandResult = this.AddBusTicket(
-                        parameters[0], 
-                        parameters[1], 
-                        parameters[2], 
-                        Ticket.ParseDateTime(parameters[3]), 
-                        decimal.Parse(parameters[4]));
-                    break;
-                case "DeleteBus":
-
-                    // allParameters = commandLine.Substring(firstSpaceIndex + 1);
-                    // parameters = allParameters.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                    // for (int i = 0; i < parameters.Length; i++)
-                    // {
-                    // parameters[i] = parameters[i].Trim();
-                    // }
-                    commandResult = this.DeleteBusTicket(
-                        parameters[0], 
-                        parameters[1], 
-                        parameters[2], 
-                        Ticket.ParseDateTime(parameters[3]));
-                    break;
-                case "FindTickets":
-
-                    // allParameters = commandLine.Substring(firstSpaceIndex + 1);
-                    // parameters = allParameters.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                    // for (int i = 0; i < parameters.Length; i++)
-                    // {
-                    // parameters[i] = parameters[i].Trim();
-                    // }
-                    commandResult = this.FindTicketsByDepartureAndArrival(parameters[0], parameters[1]);
-                    break;
-                case "FindByDates":
-
-                    // allParameters = commandLine.Substring(firstSpaceIndex + 1);
-                    // parameters = allParameters.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                    // for (int i = 0; i < parameters.Length; i++)
-                    // {
-                    // parameters[i] = parameters[i].Trim();
-                    // }
-                    commandResult = this.FindTicketsInInterval(
-                        Ticket.ParseDateTime(parameters[0]), 
-                        Ticket.ParseDateTime(parameters[1]));
-                    break;
-            }
-
-            return commandResult;
         }
 
         public string AddTicket(Ticket ticket)
